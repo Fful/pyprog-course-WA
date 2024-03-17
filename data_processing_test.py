@@ -10,11 +10,25 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 class TestColors(unittest.TestCase):
     def test_index_setter(self):
+        """
+        Test the setter method for the current_index property of the Colors class.
+
+        This test initializes a Colors object, sets the current_index property to 2,
+        and asserts that the value is correctly set to 2.
+        """
+
         colors = Colors()
         colors.current_index = 2
         self.assertEqual(colors.current_index, 2)
 
     def test_reset(self):
+        """
+        Test the reset method of the Colors class.
+
+        This test initializes a Colors object, sets the current_index property to 2,
+        calls the reset method, and asserts that the current_index property is reset to 0.
+        """
+
         colors = Colors()
         colors.current_index = 2
         colors.reset()
@@ -23,6 +37,12 @@ class TestColors(unittest.TestCase):
 
 class TestCustomDF(unittest.TestCase):
     def setUp(self):
+        """
+        Set up sample data for testing.
+
+        This method initializes sample dataframes and other variables needed for testing CustomDF methods.
+        """
+
         # Sample data for testing
         self.ideal_df = CustomDF({'X': [1, 2, 3], 'Y1(i)': [2, 4, 9], 'Y2(i)': [1, 2, 4]})
         self.train_df = CustomDF({'X': [1, 2, 3], 'Y1(t)': [2, 4, 8], 'Y2(t)': [1, 3, 5]})
@@ -38,9 +58,21 @@ class TestCustomDF(unittest.TestCase):
         self.margin = np.sqrt(2)
 
     def test_constructor(self):
+        """
+        Test the constructor method of the CustomDF class.
+
+        This test checks whether the constructor method returns an instance of CustomDF.
+        """
+
         self.assertIsInstance(self.ideal_df._constructor(), CustomDF)
 
     def test_strip_brackets(self):
+        """
+        Test the _strip_brackets method of the CustomDF class.
+
+        This test calls the _strip_brackets method with sample input and checks if it returns the expected output.
+        """
+
         # Call the method to be tested
         result_list = CustomDF()._strip_brackets(['Y1(data_in_brackets)', 'Y2(data_in_brackets)'])
         # Assert that the returned object is a list
@@ -49,6 +81,13 @@ class TestCustomDF(unittest.TestCase):
         self.assertEqual(result_list, ['Y1', 'Y2'])
 
     def test_sq_err_matrix1(self):
+        """
+        Test the _sq_err_matrix method of the CustomDF class with different labels between ideal and train data.
+
+        This test calls the _sq_err_matrix method with sample input where the labels between ideal and train data are different,
+        and checks if the method returns a CustomDF instance with the correct index, columns, and values.
+        """
+
         # Call the method to be tested
         result_df = CustomDF._sq_err_matrix(self.ideal_df[['Y1(i)', 'Y2(i)']], self.train_df['Y1(t)'])
         # Assert that the returned object is a CustomDF instance
@@ -62,6 +101,13 @@ class TestCustomDF(unittest.TestCase):
             np.testing.assert_allclose(result_df[column], expected)
 
     def test_sq_err_matrix2(self):
+        """
+        Test the _sq_err_matrix method of the CustomDF class with the same labels between ideal and train data.
+
+        This test calls the _sq_err_matrix method with sample input where the labels between ideal and train data are the same,
+        and checks if the method returns a CustomDF instance with the correct index, columns, and values.
+        """
+
         # Call the method to be tested
         result_df = CustomDF._sq_err_matrix(self.ideal_df[['Y1(i)', 'Y2(i)']], self.train_df_same['Y1(t)'])
         # Assert that the returned object is a CustomDF instance
@@ -75,6 +121,13 @@ class TestCustomDF(unittest.TestCase):
             np.testing.assert_allclose(result_df[column], expected)
 
     def test_mean_square_error1(self):
+        """
+        Test the mean_square_error method of the CustomDF class with different labels between ideal and train data.
+
+        This test calls the mean_square_error method with sample input where the labels between ideal and train data are different,
+        and checks if the method returns a CustomDF instance with the correct index, columns, and values.
+        """
+
         # Call the method to be tested
         result_df = CustomDF.mean_square_error(self.ideal_df, self.train_df)
         # Assert that the returned object is a CustomDF instance
@@ -88,6 +141,13 @@ class TestCustomDF(unittest.TestCase):
             np.testing.assert_allclose(result_df[column], expected)
 
     def test_mean_square_error2(self):
+        """
+        Test the mean_square_error method of the CustomDF class with the same labels between ideal and train data.
+
+        This test calls the mean_square_error method with sample input where the labels between ideal and train data are the same,
+        and checks if the method returns a CustomDF instance with the correct index, columns, and values.
+        """
+
         # Call the method to be tested
         result_df = CustomDF.mean_square_error(self.ideal_df, self.train_df_same)
         # Assert that the returned object is a CustomDF instance
@@ -100,7 +160,15 @@ class TestCustomDF(unittest.TestCase):
         for column, expected in expected_values.items():
             np.testing.assert_allclose(result_df[column], expected)
 
+
     def test_find_best_fit(self):
+        """
+        Test the find_best_fit method of the CustomDF class.
+
+        This test calls the find_best_fit method with sample mean square error data and checks if the method returns a CustomDF instance
+        with the correct index, columns, and values.
+        """
+
         # Call the method to be tested
         result_df = CustomDF.find_best_fit(self.mse_df)
         # Assert that the returned object is a CustomDF instance
@@ -115,6 +183,13 @@ class TestCustomDF(unittest.TestCase):
         self.assertEqual(result_df.iloc[1]['Y2(t)'], 1.0)
 
     def test_lmerge(self):
+        """
+        Test the lmerge method of the CustomDF class.
+
+        This test calls the lmerge method with sample test and ideal data and checks if the method returns a CustomDF instance
+        with the correct columns and values.
+        """
+
         # Call the method to be tested
         merged_df = CustomDF.lmerge(self.test_df, self.ideal_df, self.chosen_ideal_labels)
         # Assert that the returned object is a CustomDF instance
@@ -130,10 +205,16 @@ class TestCustomDF(unittest.TestCase):
             self.assertEqual(row, expected_row)
 
     def test_fit_unnested(self):
+        """
+        Test the fit method of the CustomDF class with unnested output.
+
+        This test calls the fit method with sample data and checks if the method returns a CustomDF instance
+        with the correct columns, values, and ideal function fitting.
+        """
+
         # Call the method to be tested
         fitted_data, counter = self.merged_df.fit(self.chosen_ideal_labels, self.margin)
 
-        print(fitted_data, counter)
         # Assert that the returned objects are of the expected types
         self.assertIsInstance(fitted_data, CustomDF)
         self.assertIsInstance(counter, defaultdict)
@@ -157,10 +238,16 @@ class TestCustomDF(unittest.TestCase):
         self.assertDictEqual(dict(counter), expected_counts)
 
     def test_fit_nested(self):
+        """
+        Test the fit method of the CustomDF class with nested output.
+
+        This test calls the fit method with sample data and checks if the method returns a CustomDF instance
+        with the correct columns, values, and ideal function fitting.
+        """
+
         # Call the method to be tested
         fitted_data, counter = self.merged_df.fit(self.chosen_ideal_labels, self.margin, nested_list=True)
 
-        print(fitted_data, counter)
         # Assert that the returned objects are of the expected types
         self.assertIsInstance(fitted_data, CustomDF)
         self.assertIsInstance(counter, defaultdict)
