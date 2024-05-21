@@ -160,4 +160,5 @@ cython_debug/
 .idea/
 
 # Created files for file format benc
-.bench_files/
+
+bench_files/
